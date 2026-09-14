@@ -1,0 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-ink-950 font-sans text-slate-200 antialiased;
+}
+
+*:focus-visible {
+  outline: 2px solid #3d8bfd;
+  outline-offset: 2px;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #243041 transparent;
+}
+
+select,
+button {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
+}

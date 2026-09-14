@@ -1,0 +1,58 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+web/.env
+web/.env.*
+!web/.env.local.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Next.js / frontend
+web/node_modules/
+web/.next/
+web/out/
+
+# Local data (keep directories, ignore generated contents)
+data/*
+!data/.gitkeep
+!data/historical/
+data/historical/*
+!data/historical/.gitkeep
+!data/results/
+data/results/*
+!data/results/.gitkeep
+!data/predictions/
+data/predictions/*
+!data/predictions/.gitkeep
+
+# QuantLab generated/runtime data
+data/historical/
+data/predictions/
+data/results/
+data/**/equity*.csv
+data/**/trades*.csv
