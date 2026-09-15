@@ -1,21 +1,62 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8000";
+const DEFAULT_LOCAL_API = "http://127.0.0.1:8000";
+const DEFAULT_PRODUCTION_API = "https://quantlab-api-0mtu.onrender.com";
+
+function resolveApiBase(): string {
+  const fromEnv = (process.env.NEXT_PUBLIC_API_BASE || "").trim().replace(/\/$/, "");
+  if (fromEnv) return fromEnv;
+
+  // Never point a deployed browser build at loopback.
+  if (process.env.NODE_ENV === "production") {
+    return DEFAULT_PRODUCTION_API;
+  }
+  return DEFAULT_LOCAL_API;
+}
+
+const API_BASE = resolveApiBase();
+
+function safeErrorDetail(body: unknown): string {
+  if (body && typeof body === "object" && "detail" in body) {
+    const detail = (body as { detail: unknown }).detail;
+    if (typeof detail === "string") return detail;
+    try {
+      return JSON.stringify(detail);
+    } catch {
+      return "Request failed";
+    }
+  }
+  try {
+    return JSON.stringify(body);
+  } catch {
+    return "Request failed";
+  }
+}
 
 async function getJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    cache: "no-store",
-    headers: { Accept: "application/json", ...(init?.headers || {}) },
-  });
-  if (!res.ok) {
-    let detail = res.statusText;
-    try {
-      const body = await res.json();
-      detail = body.detail || JSON.stringify(body);
-    } catch {
-      /* ignore */
-    }
-    throw new Error(detail);
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const url = `${API_BASE}${normalizedPath}`;
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      cache: "no-store",
+      headers: { Accept: "application/json", ...(init?.headers || {}) },
+    });
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : "Network error";
+    throw new Error(`Network error for ${url}: ${reason}`);
   }
+
+  if (!res.ok) {
+    let detail = res.statusText || "Request failed";
+    try {
+      detail = safeErrorDetail(await res.json());
+    } catch {
+      /* ignore non-JSON error bodies */
+    }
+    throw new Error(`HTTP ${res.status} for ${url}: ${detail}`);
+  }
+
   return res.json() as Promise<T>;
 }
 

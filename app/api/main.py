@@ -53,19 +53,25 @@ app = FastAPI(
     version="0.15.0",
 )
 
+# Explicit public browser origins only (no wildcard). Research API has no auth.
+ALLOWED_CORS_ORIGINS = [
+    # Local Next.js (dev may bind 3000, or 3001+ if 3000 is taken).
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://localhost:3002",
+    "http://127.0.0.1:3002",
+    "http://localhost:3003",
+    "http://127.0.0.1:3003",
+    # Production frontend (Vercel) + custom domain.
+    "https://quantlab-three.vercel.app",
+    "https://quantlabapp.com",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    # Next.js may bind 3000, or 3001+ if 3000 is already taken.
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3001",
-        "http://localhost:3002",
-        "http://127.0.0.1:3002",
-        "http://localhost:3003",
-        "http://127.0.0.1:3003",
-    ],
+    allow_origins=ALLOWED_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],

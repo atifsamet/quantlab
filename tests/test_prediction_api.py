@@ -77,6 +77,30 @@ def test_api_health_and_invalid_symbol() -> None:
     assert bad_tf.status_code == 400
 
 
+def test_cors_allows_production_frontend_origins() -> None:
+    from app.api.main import ALLOWED_CORS_ORIGINS, app
+
+    assert "https://quantlab-three.vercel.app" in ALLOWED_CORS_ORIGINS
+    assert "https://quantlabapp.com" in ALLOWED_CORS_ORIGINS
+    assert "*" not in ALLOWED_CORS_ORIGINS
+
+    client = TestClient(app)
+    for origin in ("https://quantlab-three.vercel.app", "https://quantlabapp.com"):
+        preflight = client.options(
+            "/api/health",
+            headers={
+                "Origin": origin,
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+        assert preflight.status_code in (200, 204)
+        assert preflight.headers.get("access-control-allow-origin") == origin
+
+        get_health = client.get("/api/health", headers={"Origin": origin})
+        assert get_health.status_code == 200
+        assert get_health.headers.get("access-control-allow-origin") == origin
+
+
 def test_api_research_and_artifacts() -> None:
     from app.api.main import app
 

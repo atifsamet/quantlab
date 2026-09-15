@@ -10,6 +10,7 @@ env/
 web/.env
 web/.env.*
 !web/.env.local.example
+!web/.env.production
 
 # Python
 __pycache__/

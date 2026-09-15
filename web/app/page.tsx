@@ -90,7 +90,7 @@ export default function OverviewPage() {
       {error && (
         <EmptyState
           title="API unavailable"
-          detail={`${error}. Start the backend with uvicorn, then refresh this page.`}
+          detail={error}
         />
       )}
 
