@@ -1,0 +1,9 @@
+# QuantLab frontend (Next.js App Router in /web).
+# Netlify auto-provisions the OpenNext Next.js adapter — do not pin @netlify/plugin-nextjs.
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
